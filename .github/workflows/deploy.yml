@@ -60,7 +60,7 @@ jobs:
           service: loaniq-service
           cluster: loaniq-cluster
           wait-for-service-stability: true
-```
+# ```
 
 ---
 
