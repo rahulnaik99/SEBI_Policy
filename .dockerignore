@@ -1,0 +1,19 @@
+# Secrets — NEVER bake into image
+.env
+.env.*
+# Python junk
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+# Dev tools — not needed in prod
+.git/
+.gitignore
+*.md
+*.ipynb
+# Virtualenv if you have one
+venv/
+.venv/
+# LoanIQ specific — SEBI PDFs are large, ingested at runtime
+Data/
+*.pdf

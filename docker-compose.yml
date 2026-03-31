@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    ports:
+      - "8080:8080"    # REST API — used for health checks and schema management
+      - "50051:50051"  # gRPC — used by weaviate-client v4 for fast vector operations
+    environment:
+      # IMPORTANT: AUTHENTICATION not AUTENTICATION — typo breaks anonymous access
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'   # we handle embeddings ourselves via OpenAI
+      ENABLE_MODULES: ''
+      QUERY_DEFAULT_LIMIT: 25
+      CLUSTER_HOSTNAME: 'node1'
+    # condition: service_healthy  
+    volumes:
+      # Named volume — vectors persist across container restarts
+      # docker-compose down does NOT delete this volume
+      # docker-compose down -v WILL delete it (use with caution)
+      - weaviate_data:/var/lib/weaviate
+  redis:
+    image: redis:7-alpine
+    ports:
+    - "6379:6379"
+   
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+
+    environment:
+      - REDIS_HOST=redis
+      - WEAVIATE_HOST=weaviate
+    depends_on:
+      - weaviate
+      - redis
+volumes:
+  weaviate_data:
+  
